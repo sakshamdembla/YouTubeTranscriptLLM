@@ -71,7 +71,7 @@ def get_transcript(video_id):
 
 def get_video_title(url):
     """
-    Get the title of a YouTube video using multiple fallback methods.
+    Get the title of a YouTube video using HTML parsing methods.
     
     Args:
         url (str): YouTube video URL
@@ -79,19 +79,7 @@ def get_video_title(url):
     Returns:
         str: Video title
     """
-    # Method 1: Try using pytube with retry
-    for attempt in range(3):  # Try up to 3 times
-        try:
-            yt = YouTube(url)
-            # Add a small delay to let pytube properly fetch the data
-            time.sleep(0.5)
-            if yt.title:
-                return yt.title
-        except Exception as e:
-            print(f"Pytube error (attempt {attempt+1}): {str(e)}")
-            time.sleep(1)  # Wait before retrying
-    
-    # Method 2: Try using requests to get HTML and extract title
+    # Method 1: Try using requests to get HTML and extract title
     try:
         # Make a request to the video page
         video_id = get_video_id(url)
@@ -116,7 +104,7 @@ def get_video_title(url):
     except Exception as e:
         print(f"HTML extraction error: {str(e)}")
     
-    # Method 3: Try using urllib to get the page title
+    # Method 2: Try using urllib to get the page title
     try:
         video_id = get_video_id(url)
         video_url = f"https://www.youtube.com/watch?v={video_id}"
@@ -137,7 +125,7 @@ def get_video_title(url):
     except Exception as e:
         print(f"Urllib error: {str(e)}")
         
-    # Method 4: Try using video ID as title (ultimate fallback)
+    # Method 3: Use video ID as title (ultimate fallback)
     try:
         video_id = get_video_id(url)
         return f"YouTube Video (ID: {video_id})"

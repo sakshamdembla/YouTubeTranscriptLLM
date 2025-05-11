@@ -2,9 +2,17 @@
 import streamlit as st
 from utils import transcript_utils
 
-# Initialize session state for chat history if it doesn't exist
+# Initialize session state for chat history, current video, and transcript if they don't exist
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+    
+# Track the current video ID to know when it changes
+if "current_video_id" not in st.session_state:
+    st.session_state.current_video_id = None
+    
+# Store the transcript to avoid fetching it multiple times
+if "current_transcript" not in st.session_state:
+    st.session_state.current_transcript = None
 
 st.title("YouTube Transcript LLM App")
 
@@ -14,17 +22,34 @@ st.write("Welcome to the YouTube Transcript LLM App. This application allows you
 st.subheader("Enter YouTube Video URL")
 youtube_url = st.text_input("YouTube URL", "")
 
+# Add a button to manually clear chat history
+if st.button("Clear Chat History"):
+    st.session_state.chat_history = []
+    st.rerun()
+
 if youtube_url:
     # Extract video ID
     try:
         video_id = transcript_utils.get_video_id(youtube_url)
         
+        # Check if this is a new video - if so, clear the chat history and fetch new transcript
+        if st.session_state.current_video_id != video_id:
+            st.session_state.chat_history = []
+            st.session_state.current_transcript = None  # Clear stored transcript
+            # Update the current video ID
+            st.session_state.current_video_id = video_id
+            
         # Try to get video title
         video_title = transcript_utils.get_video_title(youtube_url)
         st.subheader(f"Video: {video_title}")
         
-        # Get transcript
-        transcript = transcript_utils.get_transcript(video_id)
+        # Get transcript if not already stored
+        if st.session_state.current_transcript is None:
+            # Fetch and store the transcript
+            st.session_state.current_transcript = transcript_utils.get_transcript(video_id)
+            
+        # Use the stored transcript
+        transcript = st.session_state.current_transcript
         
         # Check if transcript is an error message
         transcript_available = not (transcript.startswith("Error fetching transcript") or 
@@ -99,7 +124,7 @@ if youtube_url:
                         # Combine everything into one prompt
                         full_prompt = f"{context}\n\nPrevious conversation:\n{chat_history_text}\n\nUser: {user_input}\n\nAssistant:"
                         
-                        # Get response from LLM
+                        # Get response from LLM - pass the stored transcript, not fetching it again
                         result = interactions.analyze_transcript(transcript, full_prompt)
                         
                         # Add assistant response to chat history
