@@ -8,9 +8,8 @@ import streamlit as st
 load_dotenv()
 
 # Get API key from environment variable
-open_api_key = st.secrets["OPENAI_API_KEY"]
+api_key = st.secrets["OPENAI_API_KEY"]
 
-openai.api_key = openai_api_key
 
 # Initialize OpenAI client with the API key (new API format)
 client = OpenAI(api_key=api_key)
