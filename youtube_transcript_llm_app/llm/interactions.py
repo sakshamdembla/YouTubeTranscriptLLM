@@ -4,12 +4,32 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import streamlit as st
 
-# Load environment variables from .env file
+# Load environment variables from .env file (for local development)
 load_dotenv()
 
-# Get API key from environment variable
-api_key = st.secrets["OPENAI_API_KEY"]
+def get_api_key():
+    """
+    Get the OpenAI API key from either Streamlit secrets (for cloud deployment)
+    or environment variables (for local development).
+    """
+    try:
+        # Try to get from Streamlit secrets first (for cloud deployment)
+        if hasattr(st, 'secrets') and 'OPENAI_API_KEY' in st.secrets:
+            return st.secrets["OPENAI_API_KEY"]
+    except Exception:
+        pass
+    
+    # Fallback to environment variable (for local development)
+    api_key = os.getenv("OPENAI_API_KEY")
+    
+    if not api_key:
+        st.error("OpenAI API key not found. Please set it in Streamlit secrets or as an environment variable.")
+        st.stop()
+    
+    return api_key
 
+# Get API key using the appropriate method
+api_key = get_api_key()
 
 # Initialize OpenAI client with the API key (new API format)
 client = OpenAI(api_key=api_key)

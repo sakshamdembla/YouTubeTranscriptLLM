@@ -63,7 +63,7 @@ if youtube_url:
                 # Make transcript scrollable if it's long
                 st.markdown(
                     f"""
-                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid #e6e6e6; padding: 15px; border-radius: 5px; background-color: #f9f9f9;">
+                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid #e6e6e6; padding: 15px; border-radius: 5px; background-color: auto;">
                         {transcript}
                     </div>
                     """, 
