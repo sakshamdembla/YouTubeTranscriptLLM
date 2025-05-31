@@ -28,6 +28,7 @@ def get_api_key():
     
     return api_key
 
+# Ensure API key is loaded before creating client
 os.environ["OPENAI_API_KEY"] = get_api_key()
 
 # Create client without passing api_key explicitly (new SDK style)
