@@ -32,7 +32,7 @@ def get_api_key():
 api_key = get_api_key()
 
 # Initialize OpenAI client with the API key (new API format)
-openai.api_key = api_key
+OpenAI.api_key = api_key
 
 def analyze_transcript(transcript, prompt_template="Summarize the following YouTube transcript:"):
     """
