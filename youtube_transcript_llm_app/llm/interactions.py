@@ -9,23 +9,19 @@ load_dotenv()
 
 def get_api_key():
     """
-    Get the OpenAI API key from either Streamlit secrets (for cloud deployment)
-    or environment variables (for local development).
+    Get the OpenAI API key from Streamlit secrets (for cloud deployment)
+    or fallback to environment variable (for local development).
     """
     try:
-        # Try to get from Streamlit secrets first (for cloud deployment)
         if hasattr(st, 'secrets') and 'OPENAI_API_KEY' in st.secrets:
             return st.secrets["OPENAI_API_KEY"]
     except Exception:
         pass
-    
-    # Fallback to environment variable (for local development)
+
     api_key = os.getenv("OPENAI_API_KEY")
-    
     if not api_key:
         st.error("OpenAI API key not found. Please set it in Streamlit secrets or as an environment variable.")
         st.stop()
-    
     return api_key
 
 # Ensure API key is loaded before creating client
@@ -33,7 +29,6 @@ os.environ["OPENAI_API_KEY"] = get_api_key()
 
 # Create client without passing api_key explicitly (new SDK style)
 client = OpenAI()
-
 def analyze_transcript(transcript, prompt_template="Summarize the following YouTube transcript:"):
     """
     Analyze a YouTube transcript using an LLM.
