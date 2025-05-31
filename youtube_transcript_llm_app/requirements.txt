@@ -1,6 +1,6 @@
 # Python package dependencies
 streamlit==1.31.0
-pytube==15.0.0
+pytube
 youtube-transcript-api==0.6.1
 openai>=1.55.0
 
